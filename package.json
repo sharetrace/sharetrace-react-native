@@ -1,0 +1,36 @@
+{
+  "name": "sharetrace-react-native",
+  "title": "Sharetrace React Native",
+  "version": "1.0.1",
+  "description": "Sharetrace React Native Module",
+  "main": "index.js",
+  "files": [
+    "README.md",
+    "android",
+    "index.js",
+    "ios",
+    "sharetrace-react-native.podspec"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sharetrace/sharetrace-react-native.git",
+    "baseUrl": "https://github.com/sharetrace/sharetrace-react-native"
+  },
+  "homepage": "https://www.sharetrace.com/",
+  "keywords": [
+    "react-native",
+    "sharetrace",
+    "免填邀请码",
+    "渠道统计"
+  ],
+  "author": {
+    "name": "Sharetrace",
+    "email": "sharetrace@shoot.net.cn"
+  },
+  "license": "MIT",
+  "licenseFilename": "LICENSE",
+  "readmeFilename": "README.md"
+}
