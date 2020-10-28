@@ -5,7 +5,6 @@
 
 static NSString * const key_code = @"code";
 static NSString * const key_msg = @"msg";
-static NSString * const key_data = @"data";
 static NSString * const key_paramsData = @"paramsData";
 static NSString * const key_resumePage = @"resumePage";
 
@@ -46,11 +45,8 @@ RCT_EXPORT_METHOD(getInstallTrace:(RCTResponseSenderBlock)callback)
     NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
     dict[key_code] = [NSNumber numberWithInteger:code];
     dict[key_msg] = msg;
-    
-    NSMutableDictionary* data = [[NSMutableDictionary alloc] init];
-    data[key_paramsData] = paramsData;
-    data[key_resumePage] = resumePage;
-    dict[key_data] = data;
+    dict[key_paramsData] = paramsData;
+    dict[key_resumePage] = resumePage;
     return dict;
 }
 
