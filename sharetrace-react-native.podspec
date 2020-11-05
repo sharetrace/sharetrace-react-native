@@ -22,6 +22,6 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.dependency "React"
-  s.dependency "SharetraceSDK"
+  s.dependency 'SharetraceSDK', "~> 2.0.0"
 end
 

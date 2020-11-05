@@ -8,8 +8,8 @@
  * https://github.com/facebook/react-native
  */
 
-import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import React, {Component} from 'react';
+import {StyleSheet, Text, View, Button} from 'react-native';
 import SharetraceModule from 'sharetrace-react-native';
 
 export default class App extends Component<{}> {
@@ -18,21 +18,38 @@ export default class App extends Component<{}> {
     message: '--',
   };
   componentDidMount() {
+    //该方法用于监听app通过univeral link或scheme拉起后获取唤醒参数
+    this.receiveWakeupListener = (map) => {
+      if (map) {
+        this.setState({
+          status: 'wakeup native callback received',
+          message: JSON.stringify(map),
+        });
+      }
+    };
+    SharetraceModule.addWakeUpListener(this.receiveWakeupListener);
+  }
+
+  componentWillUnMount() {
+    SharetraceModule.removeWakeUpListener(this.receiveWakeupListener);
+  }
+
+  getInstallTrace() {
     SharetraceModule.getInstallTrace((map) => {
       if (map) {
         this.setState({
-          status: 'native callback received',
+          status: 'getInstallTrace native callback received',
           message: JSON.stringify(map),
         });
       } else {
         this.setState({
-          status: 'native callback received',
+          status: 'getInstallTrace native callback received',
           message: 'map is null',
         });
       }
     });
-
   }
+
   render() {
     return (
       <View style={styles.container}>
@@ -40,6 +57,10 @@ export default class App extends Component<{}> {
         <Text style={styles.instructions}>STATUS: {this.state.status}</Text>
         <Text style={styles.welcome}>Result</Text>
         <Text style={styles.instructions}>{this.state.message}</Text>
+        <Button
+          title="getInstallTrace"
+          onPress={() => this.getInstallTrace()}
+        />
       </View>
     );
   }
@@ -60,6 +81,8 @@ const styles = StyleSheet.create({
   instructions: {
     textAlign: 'center',
     color: '#333333',
-    marginBottom: 5,
+    marginLeft: 10,
+    marginRight: 10,
+    marginBottom: 25,
   },
 });
