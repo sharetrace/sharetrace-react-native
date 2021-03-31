@@ -24,7 +24,6 @@ public class SharetraceModuleModule extends ReactContextBaseJavaModule {
     private static final String KEY_CODE = "code";
     private static final String KEY_MSG = "msg";
     private static final String KEY_PARAMSDATA = "paramsData";
-    private static final String KEY_RESUMEPAGE = "resumePage";
     private static final String KEY_CHANNEL = "channel";
 
     private final ReactApplicationContext reactContext;
@@ -51,12 +50,11 @@ public class SharetraceModuleModule extends ReactContextBaseJavaModule {
         return "SharetraceModule";
     }
 
-    private WritableMap parseToResult(int code, String msg, String paramsData, String resumePage, String channel) {
+    private WritableMap parseToResult(int code, String msg, String paramsData, String channel) {
         WritableMap result = Arguments.createMap();
         result.putInt(KEY_CODE, code);
         result.putString(KEY_MSG, msg);
         result.putString(KEY_PARAMSDATA, paramsData);
-        result.putString(KEY_RESUMEPAGE, resumePage);
         result.putString(KEY_CHANNEL, channel);
         return result;
     }
@@ -99,9 +97,8 @@ public class SharetraceModuleModule extends ReactContextBaseJavaModule {
 
     private WritableMap extractRetMap(AppData appData) {
         String paramsData = (appData.getParamsData() == null) ? "" : appData.getParamsData();
-        String resumePage = (appData.getResumePage() == null) ? "" : appData.getResumePage();
         String channel = (appData.getChannel() == null) ? "" : appData.getChannel();
-        return parseToResult(200, "Success", paramsData, resumePage, channel);
+        return parseToResult(200, "Success", paramsData, channel);
     }
 
     @ReactMethod
@@ -110,7 +107,7 @@ public class SharetraceModuleModule extends ReactContextBaseJavaModule {
             @Override
             public void onInstall(AppData appData) {
                 if (appData == null) {
-                    WritableMap ret = parseToResult(-1, "Extract data fail.", "", "", "");
+                    WritableMap ret = parseToResult(-1, "Extract data fail.", "", "");
                     callback.invoke(ret);
                     return;
                 }
@@ -121,7 +118,7 @@ public class SharetraceModuleModule extends ReactContextBaseJavaModule {
 
             @Override
             public void onError(int code, String message) {
-                WritableMap ret = parseToResult(code, message, "", "", "");
+                WritableMap ret = parseToResult(code, message, "", "");
                 callback.invoke(ret);
             }
         });

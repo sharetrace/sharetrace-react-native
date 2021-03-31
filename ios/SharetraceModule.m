@@ -24,7 +24,6 @@
 static NSString * const key_code = @"code";
 static NSString * const key_msg = @"msg";
 static NSString * const key_paramsData = @"paramsData";
-static NSString * const key_resumePage = @"resumePage";
 static NSString * const key_channel = @"channel";
 
 static NSString * const SharetraceWakeupEvent = @"SharetraceWakeupEvent";
@@ -63,7 +62,7 @@ RCT_EXPORT_METHOD(getInstallTrace:(RCTResponseSenderBlock)callback)
             return;
         }
 
-        NSDictionary* dict = [SharetraceModule parseToResultDict:200 :@"Success" :appData.paramsData :appData.resumePage :appData.channel];
+        NSDictionary* dict = [SharetraceModule parseToResultDict:200 :@"Success" :appData.paramsData :appData.channel];
         NSArray *params = @[dict];
         callback(params);
 
@@ -77,9 +76,10 @@ RCT_EXPORT_METHOD(getInstallTrace:(RCTResponseSenderBlock)callback)
 RCT_EXPORT_METHOD(getWakeUp:(RCTResponseSenderBlock)callback)
 {
     if (!self.hasLoad) {
-        if (self.wakeUpTraceDict.count != 0) {
+        if (self.wakeUpTraceDict != nil && self.wakeUpTraceDict.count != 0) {
             NSArray *params = @[self.wakeUpTraceDict];
             callback(params);
+            self.wakeUpTraceDict = nil;
         } else {
             callback(@[[NSNull null]]);
         }
@@ -87,16 +87,11 @@ RCT_EXPORT_METHOD(getWakeUp:(RCTResponseSenderBlock)callback)
     }
 }
 
-+ (NSDictionary*)parseToResultDict:(NSInteger)code :(NSString*)msg :(NSString*)paramsData :(NSString*)resumePage {
-    return [self parseToResultDict:code :msg :paramsData :resumePage :@""];
-}
-
-+ (NSDictionary*)parseToResultDict:(NSInteger)code :(NSString*)msg :(NSString*)paramsData :(NSString*)resumePage :(NSString*)channel {
++ (NSDictionary*)parseToResultDict:(NSInteger)code :(NSString*)msg :(NSString*)paramsData :(NSString*)channel {
     NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
     dict[key_code] = [NSNumber numberWithInteger:code];
     dict[key_msg] = msg;
     dict[key_paramsData] = paramsData;
-    dict[key_resumePage] = resumePage;
     dict[key_channel] = channel;
     return dict;
 }
@@ -107,9 +102,10 @@ RCT_EXPORT_METHOD(getWakeUp:(RCTResponseSenderBlock)callback)
         return;
     }
     
-    NSDictionary* dict = [SharetraceModule parseToResultDict:200 :@"Success" :appData.paramsData :appData.resumePage];
+    NSDictionary* dict = [SharetraceModule parseToResultDict:200 :@"Success" :appData.paramsData :appData.channel];
     if ([self bridge] != nil) {
         [self sendEventWithName:SharetraceWakeupEvent body:dict];
+        self.wakeUpTraceDict = nil;
     } else {
         @synchronized(self) {
             self.wakeUpTraceDict = dict;
