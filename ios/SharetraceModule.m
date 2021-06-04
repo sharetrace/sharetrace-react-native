@@ -52,6 +52,30 @@ RCT_EXPORT_MODULE(SharetraceModule)
     return [Sharetrace handleUniversalLink:userActivity];
 }
 
+RCT_EXPORT_METHOD(getInstallTraceWithTimeout:(int)timeoutSecond completion:(RCTResponseSenderBlock)callback) {
+    NSTimeInterval defaultTimeout = 10;
+    if (timeoutSecond > 0) {
+        defaultTimeout = timeoutSecond;
+    }
+    NSTimeInterval timeoutMilis = defaultTimeout * 1000;
+    [Sharetrace getInstallTraceWithTimeout:timeoutMilis success:^(AppData * _Nullable appData) {
+        if (appData == nil) {
+            NSDictionary* dict = [SharetraceModule parseToResultDict:-1 :@"Extract data fail." :@"" :@""];
+            NSArray *params = @[dict];
+            callback(params);
+            return;
+        }
+
+        NSDictionary* dict = [SharetraceModule parseToResultDict:200 :@"Success" :appData.paramsData :appData.channel];
+        NSArray *params = @[dict];
+        callback(params);
+    } fail:^(NSInteger code, NSString * _Nonnull msg) {
+        NSDictionary* dict = [SharetraceModule parseToResultDict:code :msg :@"" :@""];
+        NSArray *params = @[dict];
+        callback(params);
+    }];
+}
+
 RCT_EXPORT_METHOD(getInstallTrace:(RCTResponseSenderBlock)callback)
 {
     [Sharetrace getInstallTrace:^(AppData * _Nullable appData) {

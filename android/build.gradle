@@ -31,6 +31,7 @@ buildscript {
         repositories {
             google()
             jcenter()
+            mavenCentral()
         }
         dependencies {
             classpath 'com.android.tools.build:gradle:3.4.1'
@@ -75,13 +76,16 @@ repositories {
     }
     google()
     jcenter()
+    mavenCentral()
+
 
 }
 
 dependencies {
     //noinspection GradleDynamicVersion
-    implementation 'com.facebook.react:react-native:+'  // From node_modules
     implementation fileTree(dir: 'libs', include: ['*.aar'])
+    implementation 'com.facebook.react:react-native:+'  // From node_modules
+    implementation 'com.sharetrace:sharetrace-android-sdk:2.1.0'
 }
 
 def configureReactNativePom(def pom) {

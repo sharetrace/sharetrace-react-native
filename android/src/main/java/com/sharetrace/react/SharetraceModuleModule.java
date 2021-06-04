@@ -123,4 +123,32 @@ public class SharetraceModuleModule extends ReactContextBaseJavaModule {
             }
         });
     }
+
+    @ReactMethod
+    public void getInstallTraceWithTimeout(int timeoutSecond, final Callback callback) {
+        int defaultTimeout = 10;
+        if (timeoutSecond > 0) {
+            defaultTimeout = timeoutSecond;
+        }
+        int timeoutMiles = defaultTimeout * 1000;
+        ShareTrace.getInstallTrace(new ShareTraceInstallListener() {
+            @Override
+            public void onInstall(AppData appData) {
+                if (appData == null) {
+                    WritableMap ret = parseToResult(-1, "Extract data fail.", "", "");
+                    callback.invoke(ret);
+                    return;
+                }
+
+                WritableMap ret = extractRetMap(appData);
+                callback.invoke(ret);
+            }
+
+            @Override
+            public void onError(int code, String message) {
+                WritableMap ret = parseToResult(code, message, "", "");
+                callback.invoke(ret);
+            }
+        }, timeoutMiles);
+    }
 }

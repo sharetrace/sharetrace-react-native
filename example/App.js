@@ -48,6 +48,21 @@ export default class App extends Component<{}> {
         });
       }
     });
+    
+    // 设置自定义请求超时
+    // SharetraceModule.getInstallTraceWithTimeout(12, (map) => {
+    //   if (map) {
+    //     this.setState({
+    //       status: 'getInstallTrace native callback received',
+    //       message: JSON.stringify(map),
+    //     });
+    //   } else {
+    //     this.setState({
+    //       status: 'getInstallTrace native callback received',
+    //       message: 'map is null',
+    //     });
+    //   }
+    // });
   }
 
   render() {

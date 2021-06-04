@@ -129,7 +129,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.sharetrace.sharetrace_flutter_plugin_example"
+        applicationId "cn.net.shoot.sharetracedemo"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
