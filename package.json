@@ -1,7 +1,7 @@
 {
   "name": "sharetrace-react-native",
   "title": "Sharetrace React Native",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Sharetrace React Native Module",
   "main": "index.js",
   "files": [

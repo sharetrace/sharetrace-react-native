@@ -85,7 +85,7 @@ dependencies {
     //noinspection GradleDynamicVersion
     implementation fileTree(dir: 'libs', include: ['*.aar'])
     implementation 'com.facebook.react:react-native:+'  // From node_modules
-    implementation 'com.sharetrace:sharetrace-android-sdk:2.1.0'
+    implementation 'com.sharetrace:sharetrace-android-sdk:2.1.1'
 }
 
 def configureReactNativePom(def pom) {
