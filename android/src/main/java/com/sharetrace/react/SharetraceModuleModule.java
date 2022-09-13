@@ -26,12 +26,18 @@ public class SharetraceModuleModule extends ReactContextBaseJavaModule {
     private static final String KEY_PARAMSDATA = "paramsData";
     private static final String KEY_CHANNEL = "channel";
 
+    private static final String MODULE_NAME = "SharetraceModule";
+
+    private boolean hasInitialized = false;
+    private boolean hasRegisterWakeUp = false;
+    private WritableMap cacheWakeUpData = null;
     private final ReactApplicationContext reactContext;
+    private Intent wakeUpCacheIntent = null;
 
     public SharetraceModuleModule(ReactApplicationContext reactContext) {
         super(reactContext);
         this.reactContext = reactContext;
-        ShareTrace.init((Application) reactContext.getApplicationContext());
+
         reactContext.addActivityEventListener(new ActivityEventListener() {
             @Override
             public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
@@ -47,7 +53,7 @@ public class SharetraceModuleModule extends ReactContextBaseJavaModule {
 
     @Override
     public String getName() {
-        return "SharetraceModule";
+        return MODULE_NAME;
     }
 
     private WritableMap parseToResult(int code, String msg, String paramsData, String channel) {
@@ -60,6 +66,10 @@ public class SharetraceModuleModule extends ReactContextBaseJavaModule {
     }
 
     private void processWakeUp(Intent intent, final Callback callback) {
+        if (!hasInitialized) {
+            wakeUpCacheIntent = intent;
+            return;
+        }
         ShareTrace.getWakeUpTrace(intent, new ShareTraceWakeUpListener() {
             @Override
             public void onWakeUp(AppData appData) {
@@ -68,31 +78,73 @@ public class SharetraceModuleModule extends ReactContextBaseJavaModule {
                 }
 
                 WritableMap ret = extractRetMap(appData);
-                if (callback == null) {
-                    try {
-                        getReactApplicationContext()
-                                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                .emit("SharetraceWakeupEvent", ret);
-                    } catch (Throwable e) {
-                        Log.e("SharetraceModule", "getJSModule error: " + e.getMessage());
-                    }
-
-                } else {
-                    callback.invoke(ret);
+                if (!hasRegisterWakeUp) {
+                    cacheWakeUpData = ret;
+                    return;
                 }
 
+                wakeUpCallback(callback, ret);
+            }
+        });
+    }
+
+    @ReactMethod
+    public void startInit() {
+        if (reactContext == null) {
+            return;
+        }
+        ShareTrace.init((Application) reactContext.getApplicationContext());
+        onModuleInitStart();
+    }
+
+    private void onModuleInitStart() {
+        hasInitialized = true;
+        if (wakeUpCacheIntent == null) {
+            return;
+        }
+        ShareTrace.getWakeUpTrace(wakeUpCacheIntent, new ShareTraceWakeUpListener() {
+            @Override
+            public void onWakeUp(AppData appData) {
+                wakeUpCacheIntent = null;
+                if (appData == null) {
+                    return;
+                }
+
+                WritableMap ret = extractRetMap(appData);
+                wakeUpCallback(null, ret);
             }
         });
     }
 
     @ReactMethod
     public void getWakeUp(final Callback callback) {
+        hasRegisterWakeUp = true;
+        if (cacheWakeUpData != null) {
+            wakeUpCallback(callback, cacheWakeUpData);
+            cacheWakeUpData = null;
+            return;
+        }
+
         Activity curActivity = getCurrentActivity();
         if (curActivity == null) {
             return;
         }
         Intent intent = curActivity.getIntent();
         processWakeUp(intent, callback);
+    }
+
+    private void wakeUpCallback(Callback callback, WritableMap ret) {
+        if (callback == null) {
+            try {
+                getReactApplicationContext()
+                        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                        .emit("SharetraceWakeupEvent", ret);
+            } catch (Throwable e) {
+                Log.e("SharetraceModule", "getJSModule error: " + e.getMessage());
+            }
+        } else {
+            callback.invoke(ret);
+        }
     }
 
     private WritableMap extractRetMap(AppData appData) {

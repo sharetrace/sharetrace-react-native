@@ -129,7 +129,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "cn.net.shoot.sharetracedemo"
+        applicationId "com.sharetrace.Demo"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

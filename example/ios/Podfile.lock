@@ -305,10 +305,10 @@ PODS:
     - React-Core (= 0.63.4)
     - React-cxxreact (= 0.63.4)
     - React-jsi (= 0.63.4)
-  - sharetrace-react-native (1.4.0):
+  - sharetrace-react-native (2.0.0):
     - React
-    - SharetraceSDK (~> 2.3.0)
-  - SharetraceSDK (2.3.0)
+    - SharetraceSDK (~> 2.3.2)
+  - SharetraceSDK (2.3.2)
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
     - Yoga (~> 1.14)
@@ -472,11 +472,11 @@ SPEC CHECKSUMS:
   React-RCTText: 5c51df3f08cb9dedc6e790161195d12bac06101c
   React-RCTVibration: ae4f914cfe8de7d4de95ae1ea6cc8f6315d73d9d
   ReactCommon: 73d79c7039f473b76db6ff7c6b159c478acbbb3b
-  sharetrace-react-native: 8f8fd81baf7a3976124dbef09b7a09393430e74b
-  SharetraceSDK: a2da8d8776554c688d219633a0e740cacda90f78
+  sharetrace-react-native: 03c746c5cdb485201bfe1c91caf98497be3a82ce
+  SharetraceSDK: 2512064df20f9c56a1feeb4a4b8e21e80fc1f5dd
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
 PODFILE CHECKSUM: 4cbd2acaf2d32917651c5cf57096c23f473aa76e
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.11.2

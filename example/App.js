@@ -18,6 +18,7 @@ export default class App extends Component<{}> {
     message: '--',
   };
   componentDidMount() {
+    SharetraceModule.init();
     //该方法用于监听app通过univeral link或scheme拉起后获取唤醒参数
     this.receiveWakeupListener = (map) => {
       if (map) {

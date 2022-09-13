@@ -16,7 +16,10 @@
 
 @interface SharetraceModule ()
 @property (nonatomic, strong)NSDictionary *wakeUpTraceDict;
-@property (nonatomic, assign)BOOL hasLoad;
+@property (nonatomic, assign)BOOL hasRegisterWakeUp;
+@property (nonatomic, assign)BOOL hasInit;
+@property (nonatomic, strong)NSURL *cacheSchemeLinkURL;
+@property (nonatomic, strong)NSUserActivity *cacheUserActivity;
 @end
 
 @implementation SharetraceModule
@@ -45,14 +48,52 @@ RCT_EXPORT_MODULE(SharetraceModule)
 }
 
 + (BOOL)handleSchemeLinkURL:(NSURL * _Nullable)url {
-    return [Sharetrace handleSchemeLinkURL:url];
+    SharetraceModule * _Nonnull module = [SharetraceModule allocWithZone:nil];
+    if (module.hasInit) {
+        return [Sharetrace handleSchemeLinkURL:url];
+    } else {
+        module.cacheSchemeLinkURL = url;
+        return NO;
+    }
 }
 
 + (BOOL)handleUniversalLink:(NSUserActivity * _Nullable)userActivity {
-    return [Sharetrace handleUniversalLink:userActivity];
+    SharetraceModule * _Nonnull module = [SharetraceModule allocWithZone:nil];
+    if (module.hasInit) {
+        return [Sharetrace handleUniversalLink:userActivity];
+    } else {
+        module.cacheUserActivity = userActivity;
+        return NO;
+    }
+}
+
++ (void)initSharetrace {
+    SharetraceModule * _Nonnull module = [SharetraceModule allocWithZone:nil];
+    if (module.hasInit) {
+        return;
+    }
+    
+    module.hasInit = YES;
+    [Sharetrace initWithDelegate:module];
+    
+    if (module.cacheSchemeLinkURL != nil) {
+        [Sharetrace handleSchemeLinkURL:module.cacheSchemeLinkURL];
+        module.cacheSchemeLinkURL = nil;
+    }
+    
+    if (module.cacheUserActivity != nil) {
+        [Sharetrace handleUniversalLink:module.cacheUserActivity];
+        module.cacheUserActivity = nil;
+    }
+}
+
+
+RCT_EXPORT_METHOD(startInit) {
+    [SharetraceModule initSharetrace];
 }
 
 RCT_EXPORT_METHOD(getInstallTraceWithTimeout:(int)timeoutSecond completion:(RCTResponseSenderBlock)callback) {
+    [SharetraceModule initSharetrace];
     NSTimeInterval defaultTimeout = 10;
     if (timeoutSecond > 0) {
         defaultTimeout = timeoutSecond;
@@ -78,6 +119,7 @@ RCT_EXPORT_METHOD(getInstallTraceWithTimeout:(int)timeoutSecond completion:(RCTR
 
 RCT_EXPORT_METHOD(getInstallTrace:(RCTResponseSenderBlock)callback)
 {
+    [SharetraceModule initSharetrace];
     [Sharetrace getInstallTrace:^(AppData * _Nullable appData) {
         if (appData == nil) {
             NSDictionary* dict = [SharetraceModule parseToResultDict:-1 :@"Extract data fail." :@"" :@""];
@@ -99,7 +141,8 @@ RCT_EXPORT_METHOD(getInstallTrace:(RCTResponseSenderBlock)callback)
 
 RCT_EXPORT_METHOD(getWakeUp:(RCTResponseSenderBlock)callback)
 {
-    if (!self.hasLoad) {
+    [SharetraceModule allocWithZone:nil];
+    if (!self.hasRegisterWakeUp) {
         if (self.wakeUpTraceDict != nil && self.wakeUpTraceDict.count != 0) {
             NSArray *params = @[self.wakeUpTraceDict];
             callback(params);
@@ -107,7 +150,7 @@ RCT_EXPORT_METHOD(getWakeUp:(RCTResponseSenderBlock)callback)
         } else {
             callback(@[[NSNull null]]);
         }
-        self.hasLoad = YES;
+        self.hasRegisterWakeUp = YES;
     }
 }
 

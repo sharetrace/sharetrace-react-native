@@ -7,6 +7,13 @@ const eventListeners = {};
 export default class Sharetrace {
 
     /**
+    * 初始化Sharetrace
+    */
+    static init() {
+        SharetraceModule.startInit()
+    }
+
+    /**
      * 获取安装参数，默认请求超时为10秒
      * @param {Function} callback = (result）=> {} 
      */
