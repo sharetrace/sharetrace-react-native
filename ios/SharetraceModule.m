@@ -165,13 +165,15 @@ RCT_EXPORT_METHOD(getWakeUp:(RCTResponseSenderBlock)callback)
 
 - (void)getWakeUpTrace:(AppData *)appData {
     if (appData == nil) {
-        [self sendEventWithName:SharetraceWakeupEvent body:nil];
+        if (self.bridge != nil) {
+            [self.bridge enqueueJSCall:@"RCTDeviceEventEmitter" method:@"emit" args:@[SharetraceWakeupEvent] completion:NULL];
+        }
         return;
     }
     
     NSDictionary* dict = [SharetraceModule parseToResultDict:200 :@"Success" :appData.paramsData :appData.channel];
-    if ([self bridge] != nil) {
-        [self sendEventWithName:SharetraceWakeupEvent body:dict];
+    if (self.bridge != nil) {
+        [self.bridge enqueueJSCall:@"RCTDeviceEventEmitter" method:@"emit" args:@[SharetraceWakeupEvent, dict] completion:NULL];
         self.wakeUpTraceDict = nil;
     } else {
         @synchronized(self) {
